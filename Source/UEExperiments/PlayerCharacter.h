@@ -12,6 +12,8 @@ class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
 
+class UWeaponComponent;
+
 UCLASS()
 class UEEXPERIMENTS_API APlayerCharacter : public ACharacter {
 
@@ -24,8 +26,11 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 
+	inline UCameraComponent* GetCameraComponent() const { return camera; }
+
 private:
 	UPROPERTY(VisibleAnywhere) UCameraComponent* camera;
+	UPROPERTY(VisibleAnywhere) UWeaponComponent* weapon;
 
 	UPROPERTY(EditAnywhere) UInputAction* moveAction;
 	UPROPERTY(EditAnywhere) UInputAction* lookAction;
