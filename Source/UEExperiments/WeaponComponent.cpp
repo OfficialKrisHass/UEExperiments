@@ -7,12 +7,9 @@
 
 #include <Camera/CameraComponent.h>
 
-#include <EnhancedInputComponent.h>
-#include <InputActionValue.h>
-
 UWeaponComponent::UWeaponComponent() {
 
-    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = false;
 
 }
 
@@ -21,30 +18,20 @@ void UWeaponComponent::BeginPlay() {
     Super::BeginPlay();
 
 }
-void UWeaponComponent::TickComponent(float deltaTime, ELevelTick tickType, FActorComponentTickFunction* thisTickFunction) {
 
-    Super::TickComponent(deltaTime, tickType, thisTickFunction);
+void UWeaponComponent::Fire(APlayerCharacter* character) {
 
-}
-
-void UWeaponComponent::Attach(APlayerCharacter* character, UEnhancedInputComponent* inputComponent) {
-
-    m_character = character;
-
-    inputComponent->BindAction(fireAction, ETriggerEvent::Triggered, this, &UWeaponComponent::Fire);
-
-}
-
-void UWeaponComponent::Fire(const FInputActionValue& actionValue) {
+    if (ammo == 0) return;
+    ammo--;
 
     if (fireSound != nullptr)
-        UGameplayStatics::PlaySoundAtLocation(this, fireSound, m_character->GetActorLocation());
+        UGameplayStatics::PlaySoundAtLocation(this, fireSound, character->GetActorLocation());
     
-    FCollisionQueryParams params = FCollisionQueryParams(FName("Weapon fire params"), true, m_character);
+    FCollisionQueryParams params = FCollisionQueryParams(FName("Weapon fire params"), true, character);
     params.bReturnPhysicalMaterial = false;
     params.bDebugQuery = true;
 
-    UCameraComponent* camera = m_character->GetCameraComponent();
+    UCameraComponent* camera = character->GetCameraComponent();
 
     FHitResult hit = FHitResult(ForceInit);
     FVector start = camera->GetComponentLocation();
@@ -59,5 +46,13 @@ void UWeaponComponent::Fire(const FInputActionValue& actionValue) {
 
     if (GEngine)
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Trace hit actor: %s"), *hit.GetActor()->GetName()));
+
+}
+void UWeaponComponent::Reload(APlayerCharacter* character) {
+
+    if (mags == 0) return;
+
+    ammo = magSize;
+    mags--;
 
 }

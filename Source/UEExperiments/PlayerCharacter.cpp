@@ -1,6 +1,6 @@
 #include "PlayerCharacter.h"
 
-#include "WeaponComponent.h"
+#include "WeaponmanagerComponent.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -12,27 +12,22 @@ DEFINE_LOG_CATEGORY(LogCharacter);
 
 APlayerCharacter::APlayerCharacter() {
 
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(GetCapsuleComponent());
 	camera->SetRelativeLocation(FVector(-10.0f, 0.0f, 60.0f));
 	camera->bUsePawnControlRotation = true;
 
-	weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
-	weapon->SetupAttachment(camera);
+	weaponManager = CreateDefaultSubobject<UWeaponManagerComponent>(TEXT("Weapon manager"));
+	weaponManager->SetupAttachment(camera);
+	weaponManager->SetRelativeLocation(FVector(40.0f, 15.0f, -30.0f));
 
 }
 
 void APlayerCharacter::BeginPlay() {
 
 	Super::BeginPlay();
-
-}
-
-void APlayerCharacter::Tick(float deltaTime) {
-
-	Super::Tick(deltaTime);
 
 }
 
@@ -51,8 +46,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* playerInputCom
 	inputComponent->BindAction(moveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 	inputComponent->BindAction(lookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 
-	if (weapon != nullptr)
-		weapon->Attach(this, inputComponent);
+	weaponManager->SetupInput(inputComponent);
 
 }
 
