@@ -30,6 +30,7 @@ private:
 	UPROPERTY(VisibleAnywhere) TArray<UWeaponComponent*> weapons;
 
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* fireAction;
+	UPROPERTY(EditAnywhere, Category="Input") UInputAction* reloadAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* cycleAction;
 
 	UPROPERTY() APlayerCharacter* m_character = nullptr;
@@ -37,6 +38,7 @@ private:
 	virtual void BeginPlay() override;
 
 	void Fire(const FInputActionValue& actionValue);
+	void Reload(const FInputActionValue& actionValue);
 	void CycleWeapons(const FInputActionValue& actionValue);
 	
 };

@@ -48,7 +48,7 @@ void UWeaponComponent::Fire(APlayerCharacter* character) {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Trace hit actor: %s"), *hit.GetActor()->GetName()));
 
 }
-void UWeaponComponent::Reload(APlayerCharacter* character) {
+void UWeaponComponent::Reload() {
 
     if (mags == 0) return;
 

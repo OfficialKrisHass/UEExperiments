@@ -36,6 +36,6 @@ private:
 	virtual void BeginPlay() override;
 
 	void Fire(APlayerCharacter* m_character);
-	void Reload(APlayerCharacter* m_character);
+	void Reload();
 	
 };

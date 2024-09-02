@@ -45,7 +45,7 @@ void UWeaponManagerComponent::BeginPlay() {
 void UWeaponManagerComponent::SetupInput(UEnhancedInputComponent* inputComponent) {
 
     inputComponent->BindAction(fireAction, ETriggerEvent::Triggered, this, &UWeaponManagerComponent::Fire);
-
+    inputComponent->BindAction(reloadAction, ETriggerEvent::Triggered, this, &UWeaponManagerComponent::Reload);
     inputComponent->BindAction(cycleAction, ETriggerEvent::Triggered, this, &UWeaponManagerComponent::CycleWeapons);
 
 }
@@ -62,9 +62,16 @@ void UWeaponManagerComponent::SelectWeapon(uint8 index) {
 
 void UWeaponManagerComponent::Fire(const FInputActionValue& actionValue) {
 
-    if (currWeaponIndex < 0 || currWeaponIndex >= weapons.Num()) return;
+    if (currWeaponIndex >= weapons.Num()) return;
 
     weapons[currWeaponIndex]->Fire(m_character);
+
+}
+void UWeaponManagerComponent::Reload(const FInputActionValue& actionValue) {
+
+    if (currWeaponIndex >= weapons.Num()) return;
+
+    weapons[currWeaponIndex]->Reload();
 
 }
 void UWeaponManagerComponent::CycleWeapons(const FInputActionValue& actionValue) {
