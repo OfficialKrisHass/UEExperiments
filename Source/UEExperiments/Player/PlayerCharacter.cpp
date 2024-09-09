@@ -1,6 +1,6 @@
 #include "PlayerCharacter.h"
 
-#include "WeaponmanagerComponent.h"
+#include "Weapon/WeaponmanagerComponent.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>

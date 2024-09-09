@@ -1,6 +1,6 @@
 #include "WeaponComponent.h"
 
-#include "PlayerCharacter.h"
+#include "Player/PlayerCharacter.h"
 
 #include <Engine/GameEngine.h>
 #include <Kismet/GameplayStatics.h>

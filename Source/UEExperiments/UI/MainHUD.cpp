@@ -1,10 +1,11 @@
 #include "MainHUD.h"
 
-#include "AmmoInfo.h"
-#include "MainLayout.h"
+#include "UI/AmmoInfo.h"
+#include "UI/MainLayout.h"
 
-#include "WeaponManagerComponent.h"
-#include "PlayerCharacter.h"
+#include "../Weapon/WeaponManagerComponent.h"
+
+#include "../Player/PlayerCharacter.h"
 
 void AMainHUD::BeginPlay() {
 

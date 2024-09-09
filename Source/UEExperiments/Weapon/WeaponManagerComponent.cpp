@@ -1,7 +1,8 @@
 #include "WeaponManagerComponent.h"
 
-#include "PlayerCharacter.h"
-#include "WeaponComponent.h"
+#include "Player/PlayerCharacter.h"
+
+#include "Weapon/WeaponComponent.h"
 
 #include <EnhancedInputComponent.h>
 #include <InputActionValue.h>
