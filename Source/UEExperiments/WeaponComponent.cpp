@@ -21,7 +21,6 @@ void UWeaponComponent::BeginPlay() {
 
 void UWeaponComponent::Fire(APlayerCharacter* character) {
 
-    if (ammo == 0) return;
     ammo--;
 
     if (fireSound != nullptr)
@@ -49,8 +48,6 @@ void UWeaponComponent::Fire(APlayerCharacter* character) {
 
 }
 void UWeaponComponent::Reload() {
-
-    if (mags == 0) return;
 
     ammo = magSize;
     mags--;

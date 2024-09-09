@@ -26,6 +26,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 
 	inline UCameraComponent* GetCameraComponent() const { return camera; }
+	inline UWeaponManagerComponent* GetWeaponManagerComponent() const { return weaponManager; }
 
 private:
 	UPROPERTY(VisibleAnywhere) UCameraComponent* camera;

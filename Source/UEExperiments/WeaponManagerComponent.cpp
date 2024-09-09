@@ -39,6 +39,8 @@ void UWeaponManagerComponent::BeginPlay() {
     }
 
     weapons[currWeaponIndex]->SetVisibility(true);
+
+    BroadcastCurrentStats();
     
 }
 
@@ -60,18 +62,39 @@ void UWeaponManagerComponent::SelectWeapon(uint8 index) {
 
 }
 
+void UWeaponManagerComponent::BroadcastCurrentStats() {
+
+    UWeaponComponent* weapon = weapons[currWeaponIndex];
+
+    onAmmoUpdated.Broadcast(weapon->ammo, weapon->ammo, weapon->mags, weapon->mags);
+
+}
+
 void UWeaponManagerComponent::Fire(const FInputActionValue& actionValue) {
 
     if (currWeaponIndex >= weapons.Num()) return;
 
-    weapons[currWeaponIndex]->Fire(m_character);
+    UWeaponComponent* weapon = weapons[currWeaponIndex];
+    if (weapon->ammo == 0) return;
+
+    uint8 oldAmmo = weapon->ammo;
+    weapon->Fire(m_character);
+
+    onAmmoUpdated.Broadcast(oldAmmo, weapon->ammo, weapon->mags, weapon->mags);
 
 }
 void UWeaponManagerComponent::Reload(const FInputActionValue& actionValue) {
 
     if (currWeaponIndex >= weapons.Num()) return;
 
-    weapons[currWeaponIndex]->Reload();
+    UWeaponComponent* weapon = weapons[currWeaponIndex];
+    if (weapon->ammo == weapon->magSize || weapon->mags == 0) return;
+
+    uint8 oldAmmo = weapon->ammo;
+    uint8 oldMags = weapon->mags;
+    weapon->Reload();
+    
+    onAmmoUpdated.Broadcast(oldAmmo, weapon->ammo, oldMags, weapon->mags);
 
 }
 void UWeaponManagerComponent::CycleWeapons(const FInputActionValue& actionValue) {
@@ -84,6 +107,9 @@ void UWeaponManagerComponent::CycleWeapons(const FInputActionValue& actionValue)
         index = 0;
 
     SelectWeapon(index);
+
+    onAmmoUpdated.Broadcast(weapons[currWeaponIndex]->ammo, weapons[index]->ammo, weapons[currWeaponIndex]->mags, weapons[index]->mags);
+
     currWeaponIndex = (uint8) index;
     
 }
