@@ -25,7 +25,8 @@ public:
 
 	void SetupInput(UEnhancedInputComponent* inputComponent);
 
-	void SelectWeapon(uint8 index);
+	void SelectWeapon(TSubclassOf<UWeaponComponent> weaponClass);
+	void AddWeaponMags(TSubclassOf<UWeaponComponent> weaponClass, uint8 mags);
 
 	UFUNCTION() void BroadcastCurrentStats();
 	
@@ -33,16 +34,19 @@ public:
 private:
 	UPROPERTY(EditAnywhere) TArray<TSubclassOf<UWeaponComponent>> weaponClasses;
 
-	UPROPERTY(VisibleAnywhere) uint8 currWeaponIndex = 0;
-	UPROPERTY(VisibleAnywhere) TArray<UWeaponComponent*> weapons;
+	UPROPERTY(VisibleAnywhere) uint8 currWeaponID = 0;
+	UPROPERTY(VisibleAnywhere) TArray<TObjectPtr<UWeaponComponent>> weapons;
 
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* fireAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* reloadAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* cycleAction;
 
+	UPROPERTY(VisibleAnywhere) TMap<TSubclassOf<UWeaponComponent>, uint8> weaponIDs;
 	UPROPERTY() APlayerCharacter* m_character = nullptr;
 
 	virtual void BeginPlay() override;
+
+	void SelectWeapon(uint8 id);
 
 	void Fire(const FInputActionValue& actionValue);
 	void Reload(const FInputActionValue& actionValue);

@@ -53,3 +53,8 @@ void UWeaponComponent::Reload() {
     mags--;
 
 }
+void UWeaponComponent::AddMags(uint8 value) {
+
+    mags += value;
+
+}

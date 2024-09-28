@@ -18,7 +18,9 @@ void UWeaponManagerComponent::BeginPlay() {
     Super::BeginPlay();
 
     weapons.Empty();
-    currWeaponIndex = 0;
+    weaponIDs.Empty();
+    
+    currWeaponID = 0;
 
     m_character = Cast<APlayerCharacter>(GetOwner());
 
@@ -37,9 +39,12 @@ void UWeaponManagerComponent::BeginPlay() {
         
         weapons.Add(weaponComponent);
 
+        weaponComponent->id = weapons.Num() - 1;
+        weaponIDs.Add(weaponClass, weaponComponent->id);
+
     }
 
-    weapons[currWeaponIndex]->SetVisibility(true);
+    weapons[currWeaponID]->SetVisibility(true);
 
     BroadcastCurrentStats();
     
@@ -53,19 +58,42 @@ void UWeaponManagerComponent::SetupInput(UEnhancedInputComponent* inputComponent
 
 }
 
-void UWeaponManagerComponent::SelectWeapon(uint8 index) {
+void UWeaponManagerComponent::SelectWeapon(TSubclassOf<UWeaponComponent> weaponClass) {
 
-    if (index >= weapons.Num()) return;
+    const uint8* id = weaponIDs.Find(weaponClass);
+    if (id == nullptr) return;
+
+    SelectWeapon(*id);
+
+}
+void UWeaponManagerComponent::SelectWeapon(uint8 id) {
+
+    if (id == 255 || id >= weapons.Num()) return;
     
-    weapons[currWeaponIndex]->SetVisibility(false);
-    weapons[index]->SetVisibility(true);
-    currWeaponIndex = index;
+    weapons[currWeaponID]->SetVisibility(false);
+    weapons[id]->SetVisibility(true);
+    currWeaponID = id;
+
+}
+
+void UWeaponManagerComponent::AddWeaponMags(TSubclassOf<UWeaponComponent> weaponClass, uint8 value) {
+
+    uint8* id = weaponIDs.Find(weaponClass);
+    if (id == nullptr) return;
+
+    UWeaponComponent* weapon = weapons[*id];
+
+    uint8 oldValue = weapon->mags;
+    weapon->AddMags(value);
+
+    if (*id == currWeaponID)
+        onAmmoUpdated.Broadcast(weapon->ammo, weapon->ammo, oldValue, weapon->mags);
 
 }
 
 void UWeaponManagerComponent::BroadcastCurrentStats() {
 
-    UWeaponComponent* weapon = weapons[currWeaponIndex];
+    UWeaponComponent* weapon = weapons[currWeaponID];
 
     onAmmoUpdated.Broadcast(weapon->ammo, weapon->ammo, weapon->mags, weapon->mags);
 
@@ -73,9 +101,9 @@ void UWeaponManagerComponent::BroadcastCurrentStats() {
 
 void UWeaponManagerComponent::Fire(const FInputActionValue& actionValue) {
 
-    if (currWeaponIndex >= weapons.Num()) return;
+    if (currWeaponID >= weapons.Num()) return;
 
-    UWeaponComponent* weapon = weapons[currWeaponIndex];
+    UWeaponComponent* weapon = weapons[currWeaponID];
     if (weapon->ammo == 0) return;
 
     uint8 oldAmmo = weapon->ammo;
@@ -86,9 +114,9 @@ void UWeaponManagerComponent::Fire(const FInputActionValue& actionValue) {
 }
 void UWeaponManagerComponent::Reload(const FInputActionValue& actionValue) {
 
-    if (currWeaponIndex >= weapons.Num()) return;
+    if (currWeaponID >= weapons.Num()) return;
 
-    UWeaponComponent* weapon = weapons[currWeaponIndex];
+    UWeaponComponent* weapon = weapons[currWeaponID];
     if (weapon->ammo == weapon->magSize || weapon->mags == 0) return;
 
     uint8 oldAmmo = weapon->ammo;
@@ -100,17 +128,17 @@ void UWeaponManagerComponent::Reload(const FInputActionValue& actionValue) {
 }
 void UWeaponManagerComponent::CycleWeapons(const FInputActionValue& actionValue) {
 
-    int8 index = currWeaponIndex + (int8) actionValue.Get<float>();
+    int8 newID = currWeaponID + (int8) actionValue.Get<float>();
 
-    if (index < 0)
-        index = weapons.Num() - 1;
-    else if (index >= weapons.Num())
-        index = 0;
+    if (newID < 0)
+        newID = weapons.Num() - 1;
+    else if (newID >= weapons.Num())
+        newID = 0;
 
-    SelectWeapon(index);
+    uint8 oldAmmo = weapons[currWeaponID]->ammo;
+    uint8 oldMags = weapons[currWeaponID]->mags;
+    SelectWeapon(newID);
 
-    onAmmoUpdated.Broadcast(weapons[currWeaponIndex]->ammo, weapons[index]->ammo, weapons[currWeaponIndex]->mags, weapons[index]->mags);
-
-    currWeaponIndex = (uint8) index;
+    onAmmoUpdated.Broadcast(oldAmmo, weapons[newID]->ammo, oldMags, weapons[newID]->mags);
     
 }
